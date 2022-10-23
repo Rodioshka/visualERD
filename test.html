@@ -1,0 +1,259 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+                <link href="lib/tom-select/tom-select.css" rel="stylesheet">
+                <script src="lib/tom-select/tom-select.complete.min.js"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 2000px;
+                 height: 1000px;
+                 background-color: #222222;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+                <div id="select-menu" class="card-header">
+                    <div class="row no-gutters">
+                        <div class="col-10 pb-2">
+                            <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            onchange="selectNode([value]);"
+                            id="select-node"
+                            placeholder="Select node..."
+                            >
+                                <option selected>Select a Node by ID</option>
+                                
+                                    <option value="actions">actions</option>
+                                
+                                    <option value="games">games</option>
+                                
+                                    <option value="auth_group_permissions">auth_group_permissions</option>
+                                
+                                    <option value="auth_group">auth_group</option>
+                                
+                                    <option value="auth_permission">auth_permission</option>
+                                
+                                    <option value="django_content_type">django_content_type</option>
+                                
+                                    <option value="auth_user_groups">auth_user_groups</option>
+                                
+                                    <option value="auth_user">auth_user</option>
+                                
+                                    <option value="auth_user_user_permissions">auth_user_user_permissions</option>
+                                
+                                    <option value="available_pages">available_pages</option>
+                                
+                                    <option value="units">units</option>
+                                
+                                    <option value="pages">pages</option>
+                                
+                                    <option value="stages">stages</option>
+                                
+                                    <option value="django_admin_log">django_admin_log</option>
+                                
+                                    <option value="menu">menu</option>
+                                
+                                    <option value="player_roles">player_roles</option>
+                                
+                                    <option value="players">players</option>
+                                
+                                    <option value="roles">roles</option>
+                                
+                                    <option value="teams">teams</option>
+                                
+                                    <option value="users">users</option>
+                                
+                                    <option value="redirects">redirects</option>
+                                
+                                    <option value="results">results</option>
+                                
+                                    <option value="indicators">indicators</option>
+                                
+                                    <option value="robo_mission_tasks">robo_mission_tasks</option>
+                                
+                                    <option value="robo_missions">robo_missions</option>
+                                
+                                    <option value="robo_periods">robo_periods</option>
+                                
+                                    <option value="robo_locations">robo_locations</option>
+                                
+                                    <option value="robo_pricelists">robo_pricelists</option>
+                                
+                                    <option value="robo_team_results">robo_team_results</option>
+                                
+                                    <option value="robo_transactions">robo_transactions</option>
+                                
+                                    <option value="team_properties">team_properties</option>
+                                
+                                    <option value="properties">properties</option>
+                                
+                                    <option value="unit_properties">unit_properties</option>
+                                
+                                    <option value="unit_stages">unit_stages</option>
+                                
+                            </select>
+                        </div>
+                        <div class="col-2 pb-2">
+                            <button type="button" class="btn btn-primary btn-block" onclick="neighbourhoodHighlight({nodes: []});">Reset Selection</button>
+                        </div>
+                    </div>
+                </div>
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+                  new TomSelect("#select-node",{
+                      create: false,
+                      sortField: {
+                          field: "text",
+                          direction: "asc"
+                      }
+                  });
+              
+
+              
+                function htmlTitle(html) {
+                    const container = document.createElement("div");
+                    container.innerHTML = html;
+                    return container; }
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"font": {"color": "white"}, "group": 1, "id": "actions", "label": "actions", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 1, "id": "games", "label": "games", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 4, "id": "auth_group_permissions", "label": "auth_group_permissions", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 4, "id": "auth_group", "label": "auth_group", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 4, "id": "auth_permission", "label": "auth_permission", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 4, "id": "django_content_type", "label": "django_content_type", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 4, "id": "auth_user_groups", "label": "auth_user_groups", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 4, "id": "auth_user", "label": "auth_user", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 4, "id": "auth_user_user_permissions", "label": "auth_user_user_permissions", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 3, "id": "available_pages", "label": "available_pages", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 1, "id": "units", "label": "units", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 3, "id": "pages", "label": "pages", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 3, "id": "stages", "label": "stages", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 4, "id": "django_admin_log", "label": "django_admin_log", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 3, "id": "menu", "label": "menu", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 2, "id": "player_roles", "label": "player_roles", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 2, "id": "players", "label": "players", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 2, "id": "roles", "label": "roles", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 1, "id": "teams", "label": "teams", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 2, "id": "users", "label": "users", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 3, "id": "redirects", "label": "redirects", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 2, "id": "results", "label": "results", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 2, "id": "indicators", "label": "indicators", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 2, "id": "robo_mission_tasks", "label": "robo_mission_tasks", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 0, "id": "robo_missions", "label": "robo_missions", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 0, "id": "robo_periods", "label": "robo_periods", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 0, "id": "robo_locations", "label": "robo_locations", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 1, "id": "robo_pricelists", "label": "robo_pricelists", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 0, "id": "robo_team_results", "label": "robo_team_results", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 2, "id": "robo_transactions", "label": "robo_transactions", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 1, "id": "team_properties", "label": "team_properties", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 1, "id": "properties", "label": "properties", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 1, "id": "unit_properties", "label": "unit_properties", "shape": "dot", "size": 10}, {"font": {"color": "white"}, "group": 3, "id": "unit_stages", "label": "unit_stages", "shape": "dot", "size": 10}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "actions", "to": "games", "width": 1}, {"arrows": "to", "from": "auth_group_permissions", "to": "auth_group", "width": 1}, {"arrows": "to", "from": "auth_group_permissions", "to": "auth_permission", "width": 1}, {"arrows": "to", "from": "auth_permission", "to": "django_content_type", "width": 1}, {"arrows": "to", "from": "auth_user_groups", "to": "auth_group", "width": 1}, {"arrows": "to", "from": "auth_user_groups", "to": "auth_user", "width": 1}, {"arrows": "to", "from": "auth_user_user_permissions", "to": "auth_permission", "width": 1}, {"arrows": "to", "from": "auth_user_user_permissions", "to": "auth_user", "width": 1}, {"arrows": "to", "from": "available_pages", "to": "units", "width": 1}, {"arrows": "to", "from": "available_pages", "to": "pages", "width": 1}, {"arrows": "to", "from": "available_pages", "to": "stages", "width": 1}, {"arrows": "to", "from": "django_admin_log", "to": "django_content_type", "width": 1}, {"arrows": "to", "from": "django_admin_log", "to": "auth_user", "width": 1}, {"arrows": "to", "from": "menu", "to": "pages", "width": 1}, {"arrows": "to", "from": "menu", "to": "stages", "width": 1}, {"arrows": "to", "from": "menu", "to": "units", "width": 1}, {"arrows": "to", "from": "player_roles", "to": "players", "width": 1}, {"arrows": "to", "from": "player_roles", "to": "roles", "width": 1}, {"arrows": "to", "from": "player_roles", "to": "teams", "width": 1}, {"arrows": "to", "from": "players", "to": "actions", "width": 1}, {"arrows": "to", "from": "players", "to": "users", "width": 1}, {"arrows": "to", "from": "redirects", "to": "actions", "width": 1}, {"arrows": "to", "from": "redirects", "to": "pages", "width": 1}, {"arrows": "to", "from": "redirects", "to": "stages", "width": 1}, {"arrows": "to", "from": "results", "to": "actions", "width": 1}, {"arrows": "to", "from": "results", "to": "indicators", "width": 1}, {"arrows": "to", "from": "results", "to": "users", "width": 1}, {"arrows": "to", "from": "robo_mission_tasks", "to": "indicators", "width": 1}, {"arrows": "to", "from": "robo_mission_tasks", "to": "robo_missions", "width": 1}, {"arrows": "to", "from": "robo_missions", "to": "robo_periods", "width": 1}, {"arrows": "to", "from": "robo_missions", "to": "units", "width": 1}, {"arrows": "to", "from": "robo_periods", "to": "actions", "width": 1}, {"arrows": "to", "from": "robo_periods", "to": "robo_locations", "width": 1}, {"arrows": "to", "from": "robo_periods", "to": "robo_periods", "width": 1}, {"arrows": "to", "from": "robo_pricelists", "to": "actions", "width": 1}, {"arrows": "to", "from": "robo_team_results", "to": "robo_missions", "width": 1}, {"arrows": "to", "from": "robo_transactions", "to": "robo_mission_tasks", "width": 1}, {"arrows": "to", "from": "robo_transactions", "to": "players", "width": 1}, {"arrows": "to", "from": "team_properties", "to": "properties", "width": 1}, {"arrows": "to", "from": "team_properties", "to": "teams", "width": 1}, {"arrows": "to", "from": "teams", "to": "units", "width": 1}, {"arrows": "to", "from": "unit_properties", "to": "properties", "width": 1}, {"arrows": "to", "from": "unit_properties", "to": "units", "width": 1}, {"arrows": "to", "from": "unit_stages", "to": "stages", "width": 1}, {"arrows": "to", "from": "unit_stages", "to": "units", "width": 1}, {"arrows": "to", "from": "units", "to": "actions", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+                    network.on("selectNode", neighbourhoodHighlight);
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
