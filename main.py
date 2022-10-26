@@ -2,10 +2,9 @@ import networkx as nx
 from networkx import DiGraph
 from pyvis.network import Network
 from core.louvain.community_louvain import best_partition
-# from core.change_html_file import add_html_parse
+from core.change_html_file import add_html_parse
 
 from core.service import get_information_db
-from typing import List
 
 
 def reformat_tables_info_for_graph():
@@ -31,7 +30,8 @@ def reformat_tables_info_for_graph():
 def get_html_with_graph(tables: dict, relations: list) -> None:
     edge = DiGraph()
     for table_name, columns in tables.items():
-        edge.add_node(table_name,)
+        edge.add_node(table_name,
+                      title=columns)
     edge.add_edges_from(relations)
     communities = best_partition(edge, weight='weight')
     nx.set_node_attributes(edge, communities, 'group')
@@ -41,16 +41,10 @@ def get_html_with_graph(tables: dict, relations: list) -> None:
     nt.show(name=r'test.html')
 
 
-def test(tables: dict, relations: dict) -> None:
-    pass
-
-
 def main():
-    # relations, tables = get_data_from_db()
     tables, relations = reformat_tables_info_for_graph()
-    # table_with_html_columns = get_columns_in_html(data=tables)
     get_html_with_graph(tables=tables, relations=relations)
-    # add_html_parse(filename='test')
+    add_html_parse(filename='test')
 
 
 if __name__ == '__main__':

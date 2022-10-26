@@ -2,7 +2,7 @@ import ast
 
 
 def add_html_parse(filename):
-    with open(fr'{filename}.html') as inf:
+    with open(fr'../{filename}.html', 'r') as inf:
         txt = inf.read()
 
     start = txt.find('nodes = new vis.DataSet')
